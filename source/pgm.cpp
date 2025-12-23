@@ -54,7 +54,7 @@ bool load_pgm(
    vx_imagepatch_addressing_t addr;
    vx_uint8* ptr = nullptr;
 
-   if( VX_SUCCESS != vxMapImagePatch(
+   vx_status status = vxMapImagePatch(
          image,
          &rect,
          0,
@@ -64,9 +64,10 @@ bool load_pgm(
          VX_WRITE_ONLY,
          VX_MEMORY_TYPE_HOST,
          0
-      ))
+      );
+   if( VX_SUCCESS != status )
    {
-      MSG_ERR( "'vxMapImagePatch' error: %s", filename );
+      MSG_ERR( "'vxMapImagePatch' error: %d", status );
       fclose( f );
       return false;
    }

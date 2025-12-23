@@ -8,6 +8,47 @@
 
 
 
+bool mod_image( vx_image image, ImageSize& image_size )
+{
+   vx_rectangle_t rect = { 0, 0, image_size.width, image_size.height };
+   vx_map_id map_id;
+   vx_imagepatch_addressing_t addr;
+   vx_uint8* ptr = nullptr;
+
+   vx_status status = vxMapImagePatch(
+         image,
+         &rect,
+         0,
+         &map_id,
+         &addr,
+         (void**)&ptr,
+         VX_READ_AND_WRITE,
+         VX_MEMORY_TYPE_HOST,
+         0
+      );
+   if( VX_SUCCESS != status )
+   {
+      MSG_ERR( "'vxMapImagePatch' error: %d", status );
+      return false;
+   }
+
+   for( vx_uint32 y = 0; y < addr.dim_y; ++y )
+   {
+      vx_uint8* row = (vx_uint8*)((vx_uint8*)ptr + y * addr.stride_y);
+      for( vx_uint32 x = 0; x < addr.dim_x; ++x )
+      {
+         // Горизонтальный градиент
+         // row[x * addr.stride_x] = (vx_uint8)((x * 255) / (addr.dim_x - 1));
+         row[x * addr.stride_x] = row[x * addr.stride_x] & ( addr.dim_x - x );
+      }
+   }
+
+   vxUnmapImagePatch( image, map_id );
+   return true;
+}
+
+
+
 int main( )
 {
    MSG_DBG( "Defiend resources:" );
