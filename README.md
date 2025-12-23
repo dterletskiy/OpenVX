@@ -21,10 +21,10 @@ mkdir -p "${KHRONOSGROUP_ROOT_DIR}" && cd "${KHRONOSGROUP_ROOT_DIR}"
 
 git clone --recursive https://github.com/KhronosGroup/OpenVX-sample-impl.git
 # mkdir -p "${KHRONOSGROUP_OPENVX_BUILD_DIR}" && cd "${KHRONOSGROUP_OPENVX_BUILD_DIR}"
-# cmake .. -DCMAKE_BUILD_TYPE=Release -DEXPERIMENTAL_USE_VENUM=OFF
-# make -j$(nproc)
+# cmake .. -DCMAKE_BUILD_TYPE=Release -DEXPERIMENTAL_USE_VENUM=OFF || return $?
+# make -j$(nproc) || return $?
 cd "${KHRONOSGROUP_OPENVX_ROOT_DIR}"
-python3 Build.py --os=Linux --conf=Release --conf_vision --enh_vision
+python3 Build.py --os=Linux --conf=Release --conf_vision --enh_vision || return $?
 
 # Clonning and building 'dterletskiy' OpenVX examples implementation
 TDA_ROOT_DIR="${ROOT_DIR}/dterletskiy/"
@@ -38,8 +38,8 @@ mkdir -p "${TDA_ROOT_DIR}" && cd "${TDA_ROOT_DIR}"
 
 git clone git@github.com:dterletskiy/OpenVX.git
 mkdir -p "${TDA_OPENVX_BUILD_DIR}" && cd "${TDA_OPENVX_BUILD_DIR}"
-cmake -DOPENVX_ROOT="${KHRONOSGROUP_OPENVX_INSTALL_DIR}" ..
-make
+cmake -DOPENVX_ROOT="${KHRONOSGROUP_OPENVX_INSTALL_DIR}" .. || return $?
+make || return $?
 
 # Running 'dterletskiy' example
 export LD_LIBRARY_PATH="${KHRONOSGROUP_OPENVX_BIN_DIR}:${LD_LIBRARY_PATH}"
